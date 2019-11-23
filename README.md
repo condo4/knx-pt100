@@ -31,3 +31,6 @@ To flash the device, plug the Nucleo USB on your pc and run
 ```sh
 make install
 ```
+
+![](pictures/1.jpg)
+![](pictures/2.jpg)
