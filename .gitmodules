@@ -1,0 +1,3 @@
+[submodule "firmware/src/knx-stack"]
+	path = firmware/src/knx-stack
+	url = https://github.com/condo4/knx.git
