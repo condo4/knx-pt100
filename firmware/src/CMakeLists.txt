@@ -79,6 +79,8 @@ file(GLOB SRCS
     knx-pt100.cpp
 )
 
+add_definitions("-DUSE_HAL_DRIVER")
+add_definitions("-DSTM32L432xx")
 add_definitions("-DARCH_STM32")
 add_definitions("-Wno-unknown-pragmas") # To ignore pragma regions in KNX stack code
 add_definitions("-Wno-switch")
