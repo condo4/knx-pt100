@@ -1,53 +1,33 @@
 cmake_minimum_required(VERSION 3.0.0)
 
+set(CMAKE_C_COMPILER arm-none-eabi-gcc)
+set(CMAKE_CXX_COMPILER arm-none-eabi-g++)
+set(CMAKE_EXE_LINKER arm-none-eabi-g++)
+set(CMAKE_SYSTEM_NAME Generic)
+set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
+set(CPU "-mcpu=cortex-m4")
+set(FPU "-mfpu=fpv4-sp-d16")
+set(FLOAT_ABI "-mfloat-abi=hard")
+set(MCU "${CPU} -mthumb ${FPU} ${FLOAT_ABI}")
+set(LDSCRIPT "${CMAKE_SOURCE_DIR}/mcu-core/STM32L432KCUx_FLASH.ld")
+set(COMMON_FLAGS "${MCU} ${C_DEFS} -Og -Wall -fdata-sections -ffunction-sections -g -gdwarf-2 -MMD")
+set(CMAKE_CXX_FLAGS "${COMMON_FLAGS}  -std=gnu++0x"  CACHE STRING "" FORCE)
+set(CMAKE_C_FLAGS "${COMMON_FLAGS}"  CACHE STRING "" FORCE)
+set(CMAKE_EXE_LINKER_FLAGS "${MCU} -specs=nosys.specs -T${LDSCRIPT} -lc -lm -lnosys -Wl,--gc-sections  "  CACHE STRING "" FORCE)
+set(CMAKE_ASM_FLAGS "-x assembler-with-cpp ${CMAKE_C_FLAGS} "  CACHE STRING "" FORCE)
+
 project(knx-pt100)
 
 enable_language(C CXX ASM)
 
+include(knx-stack/knx.cmake)
 
 include_directories(
-    knx-stack/src
     mcu-core/Core/Inc
     mcu-core/Drivers/STM32L4xx_HAL_Driver/Inc
     mcu-core/Drivers/STM32L4xx_HAL_Driver/Inc/Legacy
     mcu-core/Drivers/CMSIS/Device/ST/STM32L4xx/Include
     mcu-core/Drivers/CMSIS/Include
-)
-
-file(GLOB KNX_STACK
-    knx-stack/src/knx/address_table_object.cpp
-    knx-stack/src/knx/apdu.cpp
-    knx-stack/src/knx/application_layer.cpp
-    knx-stack/src/knx/application_program_object.cpp
-    knx-stack/src/knx/association_table_object.cpp
-    knx-stack/src/knx/bau07B0.cpp
-    knx-stack/src/knx/bau_systemB.cpp
-    knx-stack/src/knx/bau.cpp
-    knx-stack/src/knx/bits.cpp
-    knx-stack/src/knx/cemi_frame.cpp
-    knx-stack/src/knx/data_link_layer.cpp
-    knx-stack/src/knx/datapoint_types.cpp
-    knx-stack/src/knx/device_object.cpp
-    knx-stack/src/knx/dpt.cpp
-    knx-stack/src/knx/dptconvert.cpp
-    knx-stack/src/knx/group_object.cpp
-    knx-stack/src/knx/group_object_table_object.cpp
-    knx-stack/src/knx/interface_object.cpp
-    knx-stack/src/knx/ip_data_link_layer.cpp
-    knx-stack/src/knx/ip_parameter_object.cpp
-    knx-stack/src/knx/knx_value.cpp
-    knx-stack/src/knx/memory.cpp
-    knx-stack/src/knx/network_layer.cpp
-    knx-stack/src/knx/npdu.cpp
-    knx-stack/src/knx/platform.cpp
-    knx-stack/src/knx/table_object.cpp
-    knx-stack/src/knx/tpdu.cpp
-    knx-stack/src/knx/tpuart_data_link_layer.cpp
-    knx-stack/src/knx/transport_layer.cpp
-    knx-stack/src/knx_facade.cpp
-    knx-stack/src/stm32_platform.cpp
-    knx-stack/src/ring_buffer.c
-    knx-stack/src/stdio_print.cpp
 )
 
 file(GLOB SRCS
@@ -84,9 +64,7 @@ file(GLOB SRCS
 add_definitions("-DUSE_HAL_DRIVER")
 add_definitions("-DSTM32L432xx")
 add_definitions("-DARCH_STM32")
-add_definitions("-Wno-unknown-pragmas") # To ignore pragma regions in KNX stack code
-add_definitions("-Wno-switch")
-add_definitions("-Wno-comment")
+
 
 set(EXECTABLE_NAME ${CMAKE_PROJECT_NAME}.elf)
 add_executable(${CMAKE_PROJECT_NAME}.elf ${SRCS} ${KNX_STACK})

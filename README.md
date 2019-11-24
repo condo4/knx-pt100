@@ -19,10 +19,9 @@ apt install gcc-arm-none-eabi binutils-arm-none-eabi stlink-tools
 
 In order to build the firmware, you need cmake.
 ```sh
-cd firmware
 mkdir build
 cd build
-cmake -DCMAKE_TOOLCHAIN_FILE=../src/arm-none-eabi-gcc_toolchain.cmake ../src/
+cmake ../firmware/src/
 make
 ```
 
