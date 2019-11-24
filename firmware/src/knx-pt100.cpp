@@ -10,7 +10,6 @@
 static float paramScale[4]  = {0.0, 0.0, 0.0, 0.0};
 static float paramOffset[4] = {0.0, 0.0, 0.0, 0.0};
 static float paramTrig[4] = {0.0, 0.0, 0.0, 0.0};
-static bool debugMode = false;
 
 // create named references for easy access to group objects
 #define goCh1Temp     knx.getGroupObject(1)
@@ -32,9 +31,19 @@ static float CurrentTemperature[4];
 
 void debugCallback(GroupObject& go)
 {
-    if(static_cast<bool>(go.value())) debugMode = true;
-    else debugMode = false;
-    printf("Debug Change: %i\n", debugMode);
+    printf("Debug Write\n");
+
+    for(uint16_t ch = 0; ch < 4; ch++)
+    {
+        GroupObject &temp = knx.getGroupObject(1 + (ch*2));
+        printf("Temperature of ch%i: %0.2f\n", ch, CurrentTemperature[ch]);
+        temp.value(CurrentTemperature[ch]);
+
+        GroupObject &volt = knx.getGroupObject(2 + (ch*2));
+        printf("Voltage of ch%i: %0.2f\n", ch, CurrentVoltages[ch]);
+        volt.value(CurrentVoltages[ch]);
+    }
+    go.value(false);
 }
 extern "C" {
     void EXTI15_10_IRQHandler(void);
@@ -110,20 +119,10 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* AdcHandle)
     {
         GroupObject &temp = knx.getGroupObject(1 + (ch*2));
         float busTemp = static_cast<float>(temp.value());
-        if(fabs(busTemp - CurrentTemperature[ch]) > ((debugMode)?(1.0):(paramTrig[ch])))
+        if(fabs(busTemp - CurrentTemperature[ch]) > paramTrig[ch])
         {
             printf("Temperature of ch%i changed from %0.2f to %0.2f\n", ch, busTemp, CurrentTemperature[ch]);
             temp.value(CurrentTemperature[ch]);
-        }
-        if(debugMode)
-        {
-            GroupObject &volt = knx.getGroupObject(2 + (ch*2));
-            float busVolt = static_cast<float>(volt.value());
-            if(fabs(busVolt - CurrentVoltages[ch]) > 1)
-            {
-                printf("Voltage of ch%i changed from %0.2f to %0.2f\n", ch, busVolt, CurrentVoltages[ch]);
-                volt.value(CurrentVoltages[ch]);
-            }
         }
     }
 }
