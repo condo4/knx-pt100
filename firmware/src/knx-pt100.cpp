@@ -140,9 +140,9 @@ int main(void)
     MX_USART2_UART_Init();
     HAL_GPIO_WritePin(KNX_PROG_LED_GPIO_Port, KNX_PROG_LED_Pin, GPIO_PIN_SET);
     HAL_ADCEx_Calibration_Start(&hadc1, ADC_SINGLE_ENDED);
+    printf("\n\n\n______________Start device______________\n");
     knx_setup();
 
-    printf("Start device\n");
 
     last_adc_meas = HAL_GetTick();
     HAL_ADC_Start_DMA(&hadc1, (uint32_t*)ADCValue, hadc1.Init.NbrOfConversion);

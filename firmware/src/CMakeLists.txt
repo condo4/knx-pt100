@@ -46,8 +46,10 @@ file(GLOB KNX_STACK
     knx-stack/src/knx/transport_layer.cpp
     knx-stack/src/knx_facade.cpp
     knx-stack/src/stm32_platform.cpp
-    knx-stack/src/ring_buffer.cpp
+    knx-stack/src/ring_buffer.c
+    knx-stack/src/stdio_print.cpp
 )
+
 file(GLOB SRCS
     mcu-core/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal.c
     mcu-core/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_i2c.c

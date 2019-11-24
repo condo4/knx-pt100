@@ -203,33 +203,9 @@ int _wait(int *status) {
     return -1;
 }
 
-int _write(int file, char *ptr, int len)
-{
-    int i;
-    char *ret = "\r";
-
-    if (file == STDOUT_FILENO || file == STDERR_FILENO) {
-        for (i = 0; i < len; i++) {
-            if (ptr[i] == '\n') {
-                HAL_UART_Transmit(&huart2, (uint8_t*)ret, 1, HAL_MAX_DELAY);
-            }
-            HAL_UART_Transmit(&huart2, (uint8_t*)&ptr[i], 1, HAL_MAX_DELAY);
-        }
-        return i;
-    }
-    errno = EIO;
-    return -1;
-}
-
 void _exit(int status) {
     _write(1, "exit", 4);
     while (1) {
         ;
     }
-}
-
-static volatile uint64_t _millis = 0;
-
-uint32_t millis() {
-    return HAL_GetTick();
 }
